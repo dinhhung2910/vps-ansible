@@ -1,0 +1,42 @@
+- name: Check if node env is set
+  stat:
+    path: "{{ nodejs_profile_path }}"
+  register: nodejs_profile
+
+- name: Install nodejs
+  block:
+    - name: Download nodejs package
+      get_url:
+        url: "{{ nodejs_package_url }}"
+        dest: "/tmp/{{ nodejs_package_filename }}"
+
+    - name: Create nodejs bin dir
+      file:
+        path: "{{ nodejs_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0775"
+
+    - name: Unarchive nodejs package
+      unarchive: 
+        src: "/tmp/{{ nodejs_package_filename }}"
+        dest: "{{ nodejs_dir }}"
+        remote_src: true
+
+    - name: Add nodejs global env vars
+      template:
+        src: profile.d_nodejs.sh.j2
+        dest: "{{ nodejs_profile_path }}"
+        owner: root
+        group: root
+        mode: 0644
+  when: not nodejs_profile.stat.exists
+  
+  always:
+    - name: Cleanup nodejs package
+      file:
+        path: "/tmp/{{ nodejs_package_filename }}"
+        state: absent
+
+  

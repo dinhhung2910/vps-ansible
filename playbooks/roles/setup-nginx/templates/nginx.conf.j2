@@ -1,0 +1,39 @@
+server {
+    client_max_body_size 100M;
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	root /var/www/html;
+
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name _;
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		# try_files $uri $uri/ =404;
+		# proxy_pass http://127.0.0.1:8000;
+		# rewrite ^/flink(.*) /$1 break;
+	        proxy_pass http://127.0.0.1:5000;
+	}
+	
+	location {{ streaming_frontend_web_path }} {
+        proxy_pass http://127.0.0.1:{{ streaming_frontend_web_port }};
+    }
+
+    location /file {
+        rewrite ^/file/(.*) /$1 break;
+        proxy_pass http://127.0.0.1:8000;
+    }
+
+    location {{ streaming_backend_web_path }} {
+        rewrite ^{{ streaming_backend_web_path }}/(.*) /$1 break;
+        proxy_pass http://127.0.0.1:{{ streaming_backend_web_port }};
+    }
+
+    location {{ streaming_assets_web_path }} {
+        rewrite ^{{ streaming_assets_web_path }}(.*) /$1 break;
+        proxy_pass http://127.0.0.1:{{ streaming_assets_web_port }};
+    }
+}

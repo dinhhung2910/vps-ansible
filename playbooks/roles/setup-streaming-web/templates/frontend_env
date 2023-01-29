@@ -1,0 +1,3 @@
+NEXT_PUBLIC_SERVER_URL={{ streaming_backend_web_url }}
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_SYNC_URL={{ streaming_url }}

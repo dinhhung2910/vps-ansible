@@ -1,0 +1,161 @@
+- name: Install apt packages
+  become: true
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    pkg:
+      - git
+
+- name: Create folder for streaming app
+  become: true
+  file:
+    path: "{{ streaming_app_dir }}"
+    state: directory
+    owner: "{{ streaming_user }}"
+    group: "{{ streaming_user }}"
+    mode: 0775
+
+- name: Checkout source code
+  become: true
+  become_user: "kaito"
+  git:
+    repo: "{{ streaming_git_repo }}"
+    dest: "{{ streaming_app_dir }}"
+    force: true
+    accept_hostkey: true
+
+- name: Setup streaming backend
+  become: true
+  become_user: "{{ streaming_user }}"
+  block:
+    - name: Install streaming backend dependencies
+      command:
+        argv:
+          - "npm"
+          - "install"
+          - "--legacy-peer-deps"
+        chdir: "{{ streaming_backend_dir }}"
+      environment: 
+        PATH: "$PATH:{{ nodejs_path }}"
+
+    - name: Copy backend configuration
+      template:
+        src: "backend_config.json"
+        dest: "{{ streaming_backend_config_path }}"
+    
+    - name: Copy backend env
+      template:
+        src: "backend_env"
+        dest: "{{ streaming_backend_env_path }}"
+
+    - name: Create folder for video assets
+      file:
+        path: "{{ streaming_backend_video_dir }}"
+        state: directory
+        owner: "{{ streaming_user }}"
+        group: "{{ streaming_user }}"
+        mode: 0775
+    
+    - name: Create backend service
+      become: true
+      become_user: root
+      template:
+        src: "{{ streaming_backend_service_name }}"
+        dest: "/etc/systemd/system/{{ streaming_backend_service_name }}"
+        owner: root
+        group: root
+        mode: 0644
+      notify: 
+        - Reload systemd deamon
+        - Restart streaming-backend service
+
+  when: streaming_backend_install
+
+- name: Setup streaming assets
+  become: true
+  become_user: "{{ streaming_user }}"
+  block:
+    - name: Install streaming assets dependencies
+      command:
+        argv:
+          - "npm"
+          - "install"
+          - "--legacy-peer-deps"
+        chdir: "{{ streaming_assets_dir }}"
+      environment: 
+        PATH: "$PATH:{{ nodejs_path }}"
+
+    - name: Create folder for assets
+      file:
+        path: "{{ (streaming_assets_dir, 'public', item) | path_join }}"
+        state: directory
+        owner: "{{ streaming_user }}"
+        group: "{{ streaming_user }}"
+        mode: 0775
+      with_items: "{{ streaming_assets_types }}"
+    
+    - name: Create assets service
+      become: true
+      become_user: root
+      template:
+        src: "{{ streaming_assets_service_name }}"
+        dest: "/etc/systemd/system/{{ streaming_assets_service_name }}"
+        owner: root
+        group: root
+        mode: 0644
+      notify: 
+        - Reload systemd deamon
+        - Restart streaming-assets service
+
+  when: streaming_assets_install
+
+- name: Setup streaming frontend
+  become: true
+  become_user: "{{ streaming_user }}"
+  block:
+    - name: Install streaming frontend dependencies
+      command:
+        argv:
+          - "npm"
+          - "install"
+          - "--legacy-peer-deps"
+        chdir: "{{ streaming_frontend_dir }}"
+      environment: 
+        PATH: "$PATH:{{ nodejs_path }}"
+
+    - name: Copy frontend env
+      template:
+        src: "frontend_env"
+        dest: "{{ streaming_frontend_env_path }}"
+
+    - name: Copy build script
+      template:
+        src: "frontend_build.sh"
+        dest: "{{ streaming_frontend_build_script_path }}"
+        mode: 0755
+
+    - name: Copy frontend run script
+      template:
+        src: "frontend_run.sh"
+        dest: "{{ streaming_frontend_run_script_path }}"
+        mode: 0755
+
+    # - name: Build frontend app
+    #   command: "/usr/bin/sh -c {{ streaming_frontend_build_script_path }}"
+    #   environment: 
+    #     PATH: "$PATH:{{ nodejs_path }}"
+
+    - name: Create frontend service
+      become: true
+      become_user: root
+      template:
+        src: "{{ streaming_frontend_service_name }}"
+        dest: "/etc/systemd/system/{{ streaming_frontend_service_name }}"
+        owner: root
+        group: root
+        mode: 0644
+      notify: 
+        - Reload systemd deamon
+        - Restart streaming-frontend service
+
+  when: streaming_frontend_install

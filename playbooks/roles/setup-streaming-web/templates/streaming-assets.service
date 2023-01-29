@@ -1,0 +1,12 @@
+[Unit]
+Description=Streaming assets
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User={{ streaming_user }}
+ExecStart={{ (nodejs_path, 'node') | path_join }} {{ (streaming_assets_dir, 'server.js') | path_join }}
+Environment=APP_PORT={{ streaming_assets_web_port }}
+
+[Install]
+WantedBy=multi-user.target

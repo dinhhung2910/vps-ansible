@@ -1,0 +1,7 @@
+{
+    "mongoURI": "{{ streaming_db_uri }}",
+    "defaultFileName": "/video/lancuoi.mp4",
+    "assestsBaseURL": "{{ streaming_assets_web_url }}",
+    "videoBaseURL": "{{ streaming_backend_web_url }}",
+    "serverBaseURL":  "{{ streaming_backend_web_url }}"
+}

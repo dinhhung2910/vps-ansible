@@ -1,0 +1,19 @@
+streaming_server: "139.180.141.52"
+streaming_url: "http://{{ streaming_server }}"
+
+streaming_app_web_path: "/streaming"
+
+streaming_backend_install: false
+streaming_backend_web_path: "{{ (streaming_app_web_path, 'server') | path_join }}"
+streaming_backend_web_url: "{{ streaming_url }}{{ streaming_backend_web_path }}"
+streaming_backend_web_port: 5001
+
+streaming_assets_install: false
+streaming_assets_web_path: "{{ (streaming_app_web_path, 'assets') | path_join }}"
+streaming_assets_web_url: "{{ streaming_url }}{{ streaming_assets_web_path }}"
+streaming_assets_web_port: 3001
+
+streaming_frontend_install: true
+streaming_frontend_web_path: "{{ streaming_app_web_path }}"
+streaming_frontend_web_url: "{{ streaming_url }}{{ streaming_frontend_web_path }}"
+streaming_frontend_web_port: 3000

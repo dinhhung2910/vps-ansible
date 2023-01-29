@@ -1,0 +1,29 @@
+streaming_server: "139.180.141.52"
+streaming_url: "http://{{ streaming_server }}"
+streaming_user: "kaito"
+
+streaming_app_dir: "/opt/streaming"
+streaming_app_web_path: "/streaming"
+
+streaming_backend_dir: "{{ streaming_app_dir }}"
+streaming_backend_video_dir: "{{ (streaming_app_dir, 'assets') | path_join }}"
+streaming_backend_config_dir: "{{ (streaming_app_dir, 'config') | path_join }}"
+streaming_backend_web_path: "{{ (streaming_app_web_path, 'server') | path_join }}"
+streaming_backend_web_port: 5001
+streaming_backend_config_path: "{{ (streaming_backend_dir, 'config', 'default.json') | path_join }}"
+streaming_backend_env_path: "{{ (streaming_backend_dir, '.env') | path_join }}"
+streaming_backend_service_name: "streaming-backend.service"
+
+streaming_assets_dir: "{{ (streaming_app_dir, 'cdn') | path_join }}"
+streaming_assets_types:
+  - "images"
+  - "subtitles"
+streaming_assets_service_name: "streaming-assets.service"
+
+streaming_frontend_dir: "{{ (streaming_app_dir, 'client') | path_join }}"
+streaming_frontend_env_path: "{{ (streaming_frontend_dir, '.env.local') | path_join }}"
+streaming_frontend_service_name: "streaming-frontend.service"
+streaming_frontend_build_script_path: "{{ (streaming_frontend_dir, 'install.sh') | path_join }}"
+streaming_frontend_run_script_path: "{{ (streaming_frontend_dir, 'run.sh') | path_join }}"
+
+streaming_git_repo: "git@github.com:dinhhung2910/streaming.git"

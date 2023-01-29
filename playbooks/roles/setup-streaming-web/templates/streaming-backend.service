@@ -1,0 +1,13 @@
+[Unit]
+Description=Streaming backend
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User={{ streaming_user }}
+ExecStart={{ (nodejs_path, 'node') | path_join }} {{ (streaming_backend_dir, 'server.js') | path_join }}
+Environment=NODE_CONFIG_DIR={{ streaming_backend_config_dir }}
+Environment=APP_PORT={{ streaming_backend_web_port }}
+
+[Install]
+WantedBy=multi-user.target

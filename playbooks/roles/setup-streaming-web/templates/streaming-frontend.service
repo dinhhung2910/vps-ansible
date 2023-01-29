@@ -1,0 +1,10 @@
+[Unit]
+Description=Streaming backend
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User={{ streaming_user }}
+ExecStart={{ streaming_frontend_run_script_path }}
+[Install]
+WantedBy=multi-user.target

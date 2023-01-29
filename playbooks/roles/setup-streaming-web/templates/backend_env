@@ -1,0 +1,1 @@
+APP_PORT={{ streaming_backend_web_port }}

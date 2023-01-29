@@ -1,0 +1,20 @@
+- name: Reload systemd deamon
+  command: systemctl daemon-reload
+
+- name: Restart streaming-backend service
+  service:
+    name: "{{ streaming_backend_service_name }}"
+    state: restarted
+    enabled: true
+
+- name: Restart streaming-assets service
+  service:
+    name: "{{ streaming_assets_service_name }}"
+    state: restarted
+    enabled: true
+
+- name: Restart streaming-frontend service
+  service:
+    name: "{{ streaming_frontend_service_name }}"
+    state: restarted
+    enabled: true

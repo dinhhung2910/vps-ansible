@@ -1,0 +1,6 @@
+nodejs_profile_path: "/etc/profile.d/nodejs.sh"
+nodejs_version: "node-v18.13.0-linux-x64"
+nodejs_dir: "/opt/nodejs/"
+nodejs_path: "{{ (nodejs_dir, nodejs_version, 'bin') | path_join }}"
+nodejs_package_url: "https://nodejs.org/dist/v18.13.0/node-v18.13.0-linux-x64.tar.xz"
+nodejs_package_filename: "nodejs.tar.xz"

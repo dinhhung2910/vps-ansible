@@ -1,0 +1,16 @@
+- name: Setup movie streaming
+  hosts: vps
+  vars_files:
+    - vps.yaml
+    - streaming.yaml
+    - streaming-secrets.yaml
+
+  roles:
+  # - role: setup-nodejs
+  #   become: true
+
+  # - role: setup-nginx
+  #   become: true
+
+  - role: setup-streaming-web
+    become: true
